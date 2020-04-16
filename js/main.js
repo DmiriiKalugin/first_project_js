@@ -10,10 +10,12 @@ task_form.addEventListener("submit", function(event){
     
 
     const task_html = `<li class="list-group-item d-flex justify-content-between"><span class="task-title">${taskText}</span>
-    <button type="button" data-action="delete-task" class="btn btn-light align-self-end">Удалить</button></li>`;
+        <span>
+            <button type="button" data-action="ready" class="btn btn-light align-self-end">Готово</button>
+            <button type="button" data-action="delete-task" class="btn btn-light align-self-end">Удалить</button></li>
+        </span>`;
 
-
-    task_list.insertAdjacentHTML("beforeend", task_html);
+    task_list.insertAdjacentHTML("afterbegin", task_html);
 
 
     input.value = "";
@@ -30,12 +32,21 @@ task_form.addEventListener("submit", function(event){
 
 task_list.addEventListener("click", function(event){
     if (event.target.getAttribute("data-action") == "delete-task") {
-        event.target.parentElement.remove();      
+        event.target.closest(".list-group-item").remove();      
         showNotification("delete");
 
         toggleEmptyListItem();
-        
-    }
+    } else if (event.target.getAttribute("data-action") == "ready"){
+        const parentElement = event.target.closest(".list-group-item");
+
+        parentElement.querySelector(".task-title").classList.add("task-title--done");
+
+        task_list.insertAdjacentElement("beforeend", parentElement);
+
+        event.target.remove();
+
+        showNotification("success");
+    } 
 });
 
 function toggleEmptyListItem (){
@@ -64,7 +75,7 @@ function showNotification(type){
             break;
         
         case "success" :
-            newElement.classList = "alert alert-succes";
+            newElement.classList = "alert alert-success";
             newElement.textContent = "Задача выполнена!";
             break;
     }
